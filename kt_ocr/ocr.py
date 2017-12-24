@@ -103,6 +103,8 @@ def ocr_read(img, lang):
 def get_pages(story):
     pages = []
     for p in PNG_FOLDER.iterdir():
+        if p.suffix != ".png":
+            continue
         dname, index = p.stem.rsplit("-")
         if dname == story.code:
             pages.append(p)

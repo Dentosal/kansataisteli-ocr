@@ -39,7 +39,14 @@ def convert_story(story, force=False):
         str(PNG_FOLDER / (story.code+".png"))
     ])
 
-def main(quiet=False, force=False):
+def remove_pngs(story):
+    for path in PNG_FOLDER.iterdir():
+        if path.suffix != ".png":
+            continue
+        if path.stem.rsplit("-", 1)[0] == story.code:
+            path.unlink()
+
+def main(quiet=False, force=False, keep_pngs=False):
     categories, stories = get_metadata()
 
     for i, story in enumerate(stories):
@@ -54,12 +61,11 @@ def main(quiet=False, force=False):
 
         convert_story(story, force=force)
 
-    for i, story in enumerate(stories):
-        if not quiet:
-            print(f"Reading [{i*100//(len(stories)-1)}%] {story.author} - {story.title}")
-
         path = RESULT_FOLDER / (story.code + ".json")
-        if path.exists() and not force:
-            continue
-        text = read_story(story)
-        text.save(path)
+
+        if (not path.exists()) or force:
+            text = read_story(story)
+            text.save(path)
+
+        if not keep_pngs:
+            remove_pngs(story)
