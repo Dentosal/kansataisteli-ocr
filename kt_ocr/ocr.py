@@ -33,7 +33,10 @@ def image_to_string(img, lang):
 
         level = tesserocr.RIL.WORD
         for r in tesserocr.iterate_level(api.GetIterator(), level):
-            word = r.GetUTF8Text(level)
+            try:
+                word = r.GetUTF8Text(level)
+            except RuntimeError:
+                continue
             conf = r.Confidence(level)
 
             # print(f"{word} ({conf})")
